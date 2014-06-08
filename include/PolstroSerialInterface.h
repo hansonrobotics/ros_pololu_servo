@@ -70,8 +70,8 @@ public:
 	static SerialInterface* createSerialInterface( const std::string& portName, unsigned int baudRate );
 	
 private:
-	static const unsigned int mMinChannelValue = 4000;
-	static const unsigned int mMaxChannelValue = 8000;
+	static const unsigned int mMinChannelValue = 3240;
+	static const unsigned int mMaxChannelValue = 8700;
 	
 	virtual bool writeBytes( const unsigned char* data, unsigned int dataSizeInBytes ) = 0;
 	virtual bool readBytes( unsigned char* data, unsigned int dataSizeInBytes ) = 0;

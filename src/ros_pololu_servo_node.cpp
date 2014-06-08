@@ -5,8 +5,8 @@
 
 const unsigned int baudRate = 38400;
 const float pi = 3.141592653589793f;
-const unsigned int channelMinValue = 4000;
-const unsigned int channelMaxValue = 8000;
+const unsigned int channelMinValue = 3280;
+const unsigned int channelMaxValue = 8700;
 const unsigned int channelValueRange = channelMaxValue - channelMinValue;
 const unsigned int signalPeriodInMs = 2000;
 Polstro::SerialInterface* serialInterface;
