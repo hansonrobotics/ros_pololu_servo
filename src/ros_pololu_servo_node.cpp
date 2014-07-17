@@ -98,7 +98,7 @@ int main(int argc,char**argv)
 			i = 0;
 			if (!handle_errors()) {
 				ROS_INFO("Lost connection to the device.");
-				//break;
+				break;
 			}
 		}
 
