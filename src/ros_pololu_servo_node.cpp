@@ -13,6 +13,18 @@ Polstro::SerialInterface* serialInterface;
 std::string portName = "/dev/ttyACM0";
 ros_pololu_servo::servo_pololu msgTemp,msgs;
 
+std::string errstrs[] = {
+	"Serial Signal Error (bit 0)",
+	"Serial Overrun Error (bit 1)",
+	"Serial RX buffer full (bit 2)",
+	"Serial CRC error (bit 3)",
+	"Serial protocol error (bit 4)",
+	"Serial timeout error (bit 5)",
+	"Script stack error (bit 6)",
+	"Script call stack error (bit 7)",
+	"Script program counter error (bit 8)"
+};
+
 bool status(ros_pololu_servo::pololu_state::Request  &req, 
 ros_pololu_servo::pololu_state::Response &res)
 {
@@ -44,6 +56,22 @@ void CommandCallback(const ros_pololu_servo::servo_pololu::ConstPtr& msg)
 	}
 }
 
+bool handle_errors()
+{
+	unsigned short errors;
+	if (!serialInterface->getErrorsCP(errors))
+		return false;
+
+	for (int i = 0; i < 8; ++i)
+	{
+		if (errors & 1) {
+			ROS_ERROR("%s", errstrs[i].c_str());
+		}
+		errors >>= 1;
+	}
+	return true;
+}
+
 int main(int argc,char**argv)
 {
 	ros::init(argc, argv, "pololu_servo");
@@ -57,9 +85,27 @@ int main(int argc,char**argv)
 	}
 	ros::Subscriber sub = n.subscribe("/cmd_pololu", 20, CommandCallback);
 	ros::ServiceServer service = n.advertiseService("pololu_status", status);
+	handle_errors();
     ROS_INFO("Ready...");
-	//
-	ros::spin();
+
+    int hz = 100;
+    ros::Rate r(hz);
+    int i = 0;
+	while (ros::ok())
+	{	
+		//Limit error clearing to once a second.
+		if (++i > hz) {
+			i = 0;
+			if (!handle_errors()) {
+				ROS_INFO("Lost connection to the device.");
+				//break;
+			}
+		}
+
+		ros::spinOnce();
+		r.sleep();
+	}
+
 	ROS_INFO("Deleting serial interface...");
 	delete serialInterface;
 	serialInterface = NULL;
