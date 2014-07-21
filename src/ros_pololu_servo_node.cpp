@@ -75,7 +75,13 @@ bool handle_errors()
 int main(int argc,char**argv)
 {
 	ros::init(argc, argv, "pololu_servo");
-	ros::NodeHandle n;
+	ros::NodeHandle n("~");
+    std::string port;
+    std::string topic = "cmd_pololu";
+    if (n.hasParam("port")){
+        n.getParam("port",port);
+        portName = port;
+    }
 	ROS_INFO("Creating serial interface '%s' at %d bauds\n", portName.c_str(), baudRate);
 	serialInterface = Polstro::SerialInterface::createSerialInterface( portName, baudRate );
 	if ( !serialInterface->isOpen() )
@@ -83,7 +89,8 @@ int main(int argc,char**argv)
 		ROS_ERROR("Failed to open interface\n");
 		return -1;
 	}
-	ros::Subscriber sub = n.subscribe("/cmd_pololu", 20, CommandCallback);
+	ROS_INFO("Subscribing topic '%s' \n", topic.c_str());
+	ros::Subscriber sub = n.subscribe(topic, 20, CommandCallback);
 	ros::ServiceServer service = n.advertiseService("pololu_status", status);
 	handle_errors();
     ROS_INFO("Ready...");
