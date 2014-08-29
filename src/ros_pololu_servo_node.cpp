@@ -90,7 +90,7 @@ int main(int argc,char**argv)
 		return -1;
 	}
 	ROS_INFO("Subscribing topic '%s' \n", topic.c_str());
-	ros::Subscriber sub = n.subscribe(topic, 20, CommandCallback);
+	ros::Subscriber sub = n.subscribe(topic, 40, CommandCallback);
 	ros::ServiceServer service = n.advertiseService("pololu_status", status);
 	handle_errors();
     ROS_INFO("Ready...");
