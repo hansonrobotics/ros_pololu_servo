@@ -9,15 +9,11 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   message_generation
-  angles
-  trajectory_msgs
-  actionlib
-  actionlib_msgs
-  genmsg
 )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
+
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -50,36 +46,30 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## Generate messages in the 'msg' folder
 add_message_files(
-   DIRECTORY
-   msg
    FILES
-   MotorCalibration.msg
-   MotorCommand.msg
-   MotorState.msg
-   MotorStateList.msg
+   servo_pololu.msg
+#   animate.msg
+#   Message2.msg
  )
 
 ## Generate services in the 'srv' folder
 add_service_files(
    FILES
-   MotorRange.srv
+   pololu_state.srv
+#   Service2.srv
  )
 
 ## Generate actions in the 'action' folder
-add_action_files(
-   DIRECTORY
-   action
-   FILES
-   pololu_trajectory.action
+# add_action_files(
+#   FILES
+#   Action1.action
 #   Action2.action
- )
+# )
 
 ## Generate added messages and services with any dependencies listed here
  generate_messages(
    DEPENDENCIES
    std_msgs
-   actionlib_msgs
-   trajectory_msgs
  )
 
 ###################################
@@ -92,9 +82,9 @@ add_action_files(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
+  INCLUDE_DIRS include
 #  LIBRARIES ros_pololu_servo
-  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime actionlib_msgs
+  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
 #  DEPENDS system_lib
 )
 
@@ -109,32 +99,24 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   include
 )
-link_directories( /usr/local/lib )
+
 ## Declare a cpp library
 add_library(ros_pololu_servo
    src/PolstroSerialInterface.cpp
    src/PolstroSerialInterfacePOSIX.cpp
-   src/PololuMath.cpp
-   src/PololuYamlParser.cpp
-   src/PololuController.cpp
  )
 
 ## Declare a cpp executable
-add_executable(ros_pololu_servo_node src/pololu_controller_node.cpp)
+add_executable(ros_pololu_servo_node src/ros_pololu_servo_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-#add_dependencies(ros_pololu_servo_node)
-target_link_libraries(ros_pololu_servo
-   ${catkin_LIBRARIES}
-   yaml-cpp
- )
+add_dependencies(ros_pololu_servo_node servo_pololu.h pololu_state.h)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(ros_pololu_servo_node
    ${catkin_LIBRARIES}
    ros_pololu_servo
-   yaml-cpp
  )
 
 #############
@@ -167,9 +149,9 @@ target_link_libraries(ros_pololu_servo_node
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 # install(FILES
-#    src/pololu.yaml
+#   # myfile1
 #   # myfile2
-#    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 # )
 
 #############
@@ -181,7 +163,6 @@ target_link_libraries(ros_pololu_servo_node
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
-
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
