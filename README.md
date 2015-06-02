@@ -1,5 +1,7 @@
 ros_pololu_servo
 ================
+**Not maintained.**
+*Consider use: https://github.com/hansonrobotics/ros_pololu *
 
 ROS catkin package for the Pololu Robotics servo controller board.
 Based on polstro (https://code.google.com/p/polstro/).
